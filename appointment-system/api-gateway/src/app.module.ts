@@ -12,12 +12,15 @@ import { DatabaseConfigService } from './config/database-config/database-config.
 import cacheConfig from './config/cache-config/cache.config';
 import corsConfig from './config/cors-config/cors.config';
 import { UserModule } from './modules/user/user.module';
+import { RoleModule } from './modules/role/role.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
     PassportModule,
     UserModule,
-    AppModule,
+    RoleModule,
+    DatabaseModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [corsConfig, cacheConfig], // cache config buradan global erişilebilir
