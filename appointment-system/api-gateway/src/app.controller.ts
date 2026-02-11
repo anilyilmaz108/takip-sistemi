@@ -1,9 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Roles } from './auth/roles.decorator';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { RolesGuard } from './auth/roles.guard';
-import { AuthGuard } from '@nestjs/passport';
+import { Public } from './auth/public.decorator';
 
 @Controller()
 export class AppController {
@@ -19,10 +17,16 @@ export class AppController {
     return 'Public endpoint';
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Get('admin')
   getAdmin() {
     return 'Admin endpoint';
+  }
+
+  @Public()
+  @Get('health')
+  healthCheck() {
+    return 'OK';
   }
 }

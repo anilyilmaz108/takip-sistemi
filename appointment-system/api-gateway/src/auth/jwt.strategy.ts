@@ -10,6 +10,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       issuer: 'http://localhost:8080/realms/appointment-system',
       // audience: 'frontend',
+      clockTolerance: 5,
       algorithms: ['RS256'],
       secretOrKeyProvider: jwksRsa.passportJwtSecret({
         cache: true,
