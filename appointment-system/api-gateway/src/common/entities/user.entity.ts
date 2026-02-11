@@ -18,6 +18,9 @@ export class User extends BaseEntity {
   @Column()
   lastName: string;
 
+  @Column({ default: true })
+  isActive: boolean;
+
   @Column({ nullable: true })
   keycloakId?: string; // KC ile mapping için
 

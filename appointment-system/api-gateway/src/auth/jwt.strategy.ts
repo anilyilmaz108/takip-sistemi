@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -36,6 +36,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       where: { keycloakId: sub },
       relations: ['roles'],
     });
+
+    if (user && !user.isActive) {
+      throw new UnauthorizedException('User is inactive');
+    }
 
     if (!user) {
       user = this.userRepository.create({

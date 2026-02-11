@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { RolesGuard } from './auth/roles.guard';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -15,6 +15,8 @@ import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { AuthModule } from './auth/auth.module';
     UserModule,
     RoleModule,
     AuthModule,
+    CommonModule,
     DatabaseModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -32,14 +35,22 @@ import { AuthModule } from './auth/auth.module';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, JwtStrategy, {
+  providers: [
+    AppService, 
+    JwtStrategy, 
+    {
     provide: APP_GUARD,
     useClass: JwtAuthGuard,
     // useClass: AuthGuard('jwt'),
-  },
-  {
-    provide: APP_GUARD,
-    useClass: RolesGuard,
-  },],
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}
