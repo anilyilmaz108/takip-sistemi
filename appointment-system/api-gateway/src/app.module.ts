@@ -5,11 +5,24 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { RolesGuard } from './auth/roles.guard';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { DatabaseConfigService } from './config/database-config/database-config.service';
+import cacheConfig from './config/cache-config/cache.config';
+import corsConfig from './config/cors-config/cors.config';
 
 @Module({
-  imports: [PassportModule],
+  imports: [
+    PassportModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [corsConfig, cacheConfig], // cache config buradan global erişilebilir
+    }),
+    TypeOrmModule.forRootAsync({
+      useClass: DatabaseConfigService,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, {
     provide: APP_GUARD,
