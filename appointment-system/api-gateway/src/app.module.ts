@@ -11,10 +11,13 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseConfigService } from './config/database-config/database-config.service';
 import cacheConfig from './config/cache-config/cache.config';
 import corsConfig from './config/cors-config/cors.config';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
     PassportModule,
+    UserModule,
+    AppModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [corsConfig, cacheConfig], // cache config buradan global erişilebilir
