@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, Body, Delete } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, Delete, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Roles } from 'src/auth/roles.decorator';
 
@@ -28,5 +28,11 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.softDelete(id);
+  }
+
+  @Roles('ADMIN')
+  @Post()
+  create(@Body() body: any) {
+    return this.userService.create(body);
   }
 }

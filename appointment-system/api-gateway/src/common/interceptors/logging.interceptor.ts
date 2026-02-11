@@ -14,7 +14,7 @@ export class LoggingInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const now = Date.now();
     const request = context.switchToHttp().getRequest();
-    const { method, url } = request;
+    const { method, url, body, query, params } = request;
     const user = request.user;
 
     return next.handle().pipe(
@@ -23,11 +23,13 @@ export class LoggingInterceptor implements NestInterceptor {
 
         this.logger.log({
           type: 'REQUEST',
-          timestamp: new Date().toISOString(),
           method,
           url,
           userId: user?.id || null,
           email: user?.email || null,
+          body,
+          query,
+          params,
           responseTime,
         });
       }),
