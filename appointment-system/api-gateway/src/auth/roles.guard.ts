@@ -5,20 +5,40 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { ROLES_KEY } from './roles.decorator';
+import { User } from 'src/common/entities/user.entity';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
-canActivate(context: ExecutionContext): boolean {
-  const requiredRoles = this.reflector.get<string[]>('roles', context.getHandler());
-  if (!requiredRoles) return true;
+  canActivate(context: ExecutionContext): boolean {
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
-  const request = context.switchToHttp().getRequest();
-  const user = request.user;
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
+    }
 
-  const userRoles: string[] = user?.realm_access?.roles || [];
+    const request = context.switchToHttp().getRequest();
+    const user: User = request.user;
 
-  return requiredRoles.some(role => userRoles.includes(role));
-}
+    if (!user || !user.roles) {
+      throw new ForbiddenException('User roles not found');
+    }
+
+    const userRoleNames = user.roles.map((role) => role.name);
+
+    const hasRole = requiredRoles.some((role) =>
+      userRoleNames.includes(role),
+    );
+
+    if (!hasRole) {
+      throw new ForbiddenException('Insufficient permissions');
+    }
+
+    return true;
+  }
 }

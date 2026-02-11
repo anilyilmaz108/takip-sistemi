@@ -14,12 +14,14 @@ import corsConfig from './config/cors-config/cors.config';
 import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
 import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     PassportModule,
     UserModule,
     RoleModule,
+    AuthModule,
     DatabaseModule,
     ConfigModule.forRoot({
       isGlobal: true,

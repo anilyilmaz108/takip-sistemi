@@ -29,4 +29,10 @@ export class AppController {
   healthCheck() {
     return 'OK';
   }
+
+  @Roles('ADMIN')
+  @Get('admin-only')
+  getAdminData() {
+    return 'Only ADMIN can see this';
+  }
 }
