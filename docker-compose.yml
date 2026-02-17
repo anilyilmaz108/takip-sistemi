@@ -144,3 +144,16 @@ services:
     networks:
       - appointment-net
   
+  notification-service:
+    build:
+      context: ./appointment-system/services/notification-service
+    container_name: notification-service
+    restart: unless-stopped
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BROKER: kafka:9092
+      KAFKA_CLIENT_ID: notification-service
+      KAFKA_GROUP_ID: notification-service-group
+    networks:
+      - appointment-net
