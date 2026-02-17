@@ -119,3 +119,28 @@ services:
       - "5601:5601"
     networks:
       - appointment-net
+
+  user-service:
+    build:
+      context: ./appointment-system/services/user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - kafka
+    environment:
+      PORT: 3001
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: appointment_user
+      DB_PASS: appointment_pass
+      DB_NAME: appointment
+      KAFKA_BROKER: kafka:9092
+      KAFKA_CLIENT_ID: user-service
+      KAFKA_GROUP_ID: user-service-group
+    ports:
+      - "3001:3001"
+    networks:
+      - appointment-net
+  
