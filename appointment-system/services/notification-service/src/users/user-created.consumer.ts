@@ -1,22 +1,35 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { EventStoreService } from '../events/event-store.service';
 import { BaseConsumer } from '../events/base.consumer';
 import { KafkaService } from '../kafka/kafka.service';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UserCreatedConsumer extends BaseConsumer<any> {
   topic = 'user.created';
 
-  constructor(kafka: KafkaService) {
+  constructor(
+    kafka: KafkaService,
+    private readonly eventStore: EventStoreService,
+  ) {
     super(kafka);
   }
 
   async handle(event: any, correlationId: string): Promise<void> {
+    const eventId = event.eventId;
+
+    if (this.eventStore.isProcessed(eventId)) {
+      this.logger.warn(
+        `Duplicate event skipped | eventId=${eventId}`,
+      );
+      return;
+    }
+
     this.logger.log(
-      `UserCreated event received | correlationId=${correlationId}`,
+      `Processing event | eventId=${eventId} | correlationId=${correlationId}`,
     );
 
-    this.logger.log(JSON.stringify(event));
+    // Mail gönderme vs
 
-    // Burada mail gönderme vs yapılabilir
+    this.eventStore.markAsProcessed(eventId);
   }
 }
