@@ -6,8 +6,6 @@ import { KafkaService } from '../kafka/kafka.service';
 export class UserCreatedConsumer extends BaseConsumer<any> {
   topic = 'user.created';
 
-  private readonly logger = new Logger(UserCreatedConsumer.name);
-
   constructor(kafka: KafkaService) {
     super(kafka);
   }
